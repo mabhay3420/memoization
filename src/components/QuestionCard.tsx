@@ -12,6 +12,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CheckCircledIcon, CrossCircledIcon } from "@radix-ui/react-icons";
+import { AnimatedResult } from "./AnimatedResult";
+import { motion } from "framer-motion";
 
 interface QuestionCardProps {
   question: string;
@@ -28,13 +30,16 @@ export function QuestionCard({
 }: QuestionCardProps) {
   const [showAnswer, setShowAnswer] = useState(false);
 
+  const [isAnimating, setIsAnimating] = useState(remembered !== null);
+
   const handleTapToReveal = () => {
     setShowAnswer(true);
   };
 
   const handleRememberedResponse = (remembered: boolean) => {
-    onRememberedResponse(remembered);
+    setIsAnimating(true);
     setShowAnswer(false);
+    onRememberedResponse(remembered);
   };
 
   const previouslyAttempted = useMemo(() => {
@@ -65,16 +70,19 @@ export function QuestionCard({
           )}
           {previouslyAttempted && (
             <div className="flex items-center justify-center">
-              {remembered ? (
-                <span className="flex items-center text-lg font-medium text-green-500">
-                  <span className="mr-2">😄</span>
-                  Remembered
-                </span>
-              ) : (
-                <span className="flex items-center text-lg font-medium text-red-500">
-                  <span className="mr-2">😞</span>
-                  Forgot
-                </span>
+              {isAnimating && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.5 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <AnimatedResult
+                    type={remembered ? "remembered" : "forgot"}
+                    isNewResponse={false}
+                    onAnimationComplete={() => {}}
+                  />
+                </motion.div>
               )}
             </div>
           )}

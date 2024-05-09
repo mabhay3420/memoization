@@ -2,13 +2,9 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-
 import { QuestionCard } from "./QuestionCard";
-
 import { Progress } from "@/components/ui/progress";
-
 import { Button } from "@/components/ui/button";
-
 import {
   Card,
   CardContent,
@@ -16,6 +12,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AnimatedResult } from "./AnimatedResult";
+import { motion } from "framer-motion";
 
 interface QuestionAnswer {
   question: string;
@@ -32,6 +30,7 @@ export function QuestionCardGroup({ questions }: QuestionCardGroupProps) {
   const [responses, setResponses] = useState<(boolean | null)[]>(
     Array(questions.length).fill(null)
   );
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const showSuccess = useMemo(() => {
     return currentQuestionIndex === questions.length;
@@ -42,11 +41,13 @@ export function QuestionCardGroup({ questions }: QuestionCardGroupProps) {
     updatedResponses[currentQuestionIndex] = remembered;
     setResponses(updatedResponses);
     setRemembered(remembered);
+    setIsAnimating(true);
 
     setTimeout(() => {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
       setRemembered(null);
-    }, 100);
+      setIsAnimating(false);
+    }, 1000); // Delay of 1 second for the animation
   };
 
   const handlePrevQuestion = () => {
@@ -87,6 +88,7 @@ export function QuestionCardGroup({ questions }: QuestionCardGroupProps) {
             <p className="text-xl">You have completed all the questions.</p>
           </div>
         )}
+
       </CardContent>
       <CardFooter className="flex flex-col justify-between items-center">
         <div className="flex justify-center w-full mb-4">

@@ -146,16 +146,23 @@ export default function Home() {
           <p className="text-center">Generating questions...</p>
         ) : (
           questions.length > 0 && (
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col">
               <QuestionCardGroup questions={questions} />
-
               <div className="mt-4">
                 <h3 className="text-xl font-bold mb-2">Summary</h3>
-                <Accordion type="single" collapsible>
+                <Accordion type="single" collapsible className="w-full">
                   {questions.map((qa, index) => (
-                    <AccordionItem key={index} value={`item-${index}`}>
-                      <AccordionTrigger>{qa.question}</AccordionTrigger>
-                      <AccordionContent>{qa.answer}</AccordionContent>
+                    <AccordionItem
+                      key={index}
+                      value={`item-${index}`}
+                      className="border-b"
+                    >
+                      <AccordionTrigger className="w-full text-left py-2">
+                        {qa.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-left py-2">
+                        {qa.answer}
+                      </AccordionContent>
                     </AccordionItem>
                   ))}
                 </Accordion>
