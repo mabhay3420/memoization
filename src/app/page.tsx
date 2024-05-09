@@ -1,4 +1,5 @@
 // page.tsx
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -56,6 +57,7 @@ export default function Home() {
         if (!question || !answer) return null;
         return { question: question.trim(), answer: answer.trim() };
       });
+
       questionAnswers = questionAnswers.filter((qa) => qa !== null);
       setQuestions(questionAnswers as QuestionAnswer[]);
     } catch (error) {
@@ -69,27 +71,43 @@ export default function Home() {
   };
 
   return (
-    <div className="container mx-auto">
-      <h1 className="text-4xl font-bold mb-8">Memoization</h1>
-      <div className="mb-4">
-        <Textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Enter your text here"
-          className="w-full"
-        />
+    <div className="container mx-auto py-8">
+      {/* Center the content vertically with padding */}
+      <div className="max-w-2xl mx-auto">
+        {/* Limit the width and center horizontally */}
+        <h1 className="text-4xl font-bold mb-8 text-center text-slate-800">
+          {/* Increase the font size, add bold weight, and center the heading */}
+          Memoization
+        </h1>
+        <div className="mb-8">
+          <Textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Copy and paste something you want to memorize"
+            className="w-full rounded-lg border-slate-300 focus:ring-blue-500"
+          />
+          {/* Add rounded corners and a focus ring */}
+        </div>
+        <div className="flex justify-center mb-8">
+          {/* Center the button horizontally */}
+          <Button
+            onClick={generateQuestions}
+            disabled={loading}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg"
+          >
+            {/* Add background color, hover effect, text color, and rounded corners */}
+            {loading ? "Generating..." : "Generate Questions"}
+          </Button>
+        </div>
+        {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+        {/* Center the error message */}
+        {loading ? (
+          <p className="text-center">Generating questions...</p>
+        ) : (
+          questions.length > 0 && <QuestionCardGroup questions={questions} />
+        )}
+        {/* Center the loading message */}
       </div>
-      <div className="mb-8">
-        <Button onClick={generateQuestions} disabled={loading}>
-          {loading ? "Generating..." : "Generate Questions"}
-        </Button>
-      </div>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      {loading ? (
-        <p>Generating questions...</p>
-      ) : (
-        questions.length > 0 && <QuestionCardGroup questions={questions} />
-      )}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 // QuestionCard.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -32,28 +32,68 @@ export function QuestionCard({
     setShowAnswer(true);
   };
 
+  const handleRememberedResponse = (remembered: boolean) => {
+    onRememberedResponse(remembered);
+    setShowAnswer(false);
+  };
+
+  const previouslyAttempted = useMemo(() => {
+    return remembered !== null;
+  }, [remembered]);
+
   return (
-    <Card className="w-[350px]">
+    <Card className="bg-white shadow-md rounded-lg p-6 m-4">
       <CardHeader>
-        <CardTitle>Question</CardTitle>
-        <CardDescription>{question}</CardDescription>
+        <h3 className="text-xl font-semibold mb-2">{question}</h3>
       </CardHeader>
-      <CardContent>{showAnswer && <p>{answer}</p>}</CardContent>
-      <CardFooter className="flex justify-between">
-        {!showAnswer && (
-          <Button onClick={handleTapToReveal}>Tap to Reveal</Button>
+      <CardContent className="mt-4">
+        {showAnswer && (
+          <p className="text-lg font-medium text-slate-800">{answer}</p>
         )}
-        {showAnswer && remembered === null && (
-          <div className="space-x-4">
+      </CardContent>
+      <CardFooter className="mt-6 flex justify-center">
+        <div className="flex flex-col items-center justify-center space-y-4">
+          {!showAnswer && (
+            <div className="flex items-center justify-center">
+              <Button
+                onClick={handleTapToReveal}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg"
+              >
+                Tap to Reveal
+              </Button>
+            </div>
+          )}
+          {previouslyAttempted && (
+            <div className="flex items-center justify-center">
+              {remembered ? (
+                <span className="flex items-center text-lg font-medium text-green-500">
+                  <span className="mr-2">😄</span>
+                  Remembered
+                </span>
+              ) : (
+                <span className="flex items-center text-lg font-medium text-red-500">
+                  <span className="mr-2">😞</span>
+                  Forgot
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+        {showAnswer && !previouslyAttempted && (
+          <div className="flex items-center justify-center space-x-4">
             <Button
               variant="outline"
-              onClick={() => onRememberedResponse(false)}
+              onClick={() => handleRememberedResponse(false)}
+              className="border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-semibold py-2 px-4 rounded-lg"
             >
-              <CrossCircledIcon className="h-4 w-4 mr-2" />
+              <CrossCircledIcon className="h-5 w-5 mr-2 inline-block align-text-bottom" />
               No
             </Button>
-            <Button onClick={() => onRememberedResponse(true)}>
-              <CheckCircledIcon className="h-4 w-4 mr-2" />
+            <Button
+              onClick={() => handleRememberedResponse(true)}
+              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg"
+            >
+              <CheckCircledIcon className="h-5 w-5 mr-2 inline-block align-text-bottom" />
               Yes
             </Button>
           </div>
