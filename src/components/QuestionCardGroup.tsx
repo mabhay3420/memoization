@@ -64,7 +64,8 @@ export function QuestionCardGroup({ questions }: QuestionCardGroupProps) {
     }
   };
 
-  const handleMarkComplete = () => {
+  const handleTryAgain = () => {
+    setResponses(Array(questions.length).fill(null));
     setCurrentQuestionIndex(0);
   };
 
@@ -88,7 +89,6 @@ export function QuestionCardGroup({ questions }: QuestionCardGroupProps) {
             <p className="text-xl">You have completed all the questions.</p>
           </div>
         )}
-
       </CardContent>
       <CardFooter className="flex flex-col justify-between items-center">
         <div className="flex justify-center w-full mb-4">
@@ -102,10 +102,10 @@ export function QuestionCardGroup({ questions }: QuestionCardGroupProps) {
             </Button>
             {showSuccess ? (
               <Button
-                onClick={handleMarkComplete}
+                onClick={handleTryAgain}
                 className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg"
               >
-                Mark Completed
+                Try Again
               </Button>
             ) : (
               <Button
