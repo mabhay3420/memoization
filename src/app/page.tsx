@@ -97,6 +97,18 @@ export default function Home() {
     </div>
   );
 
+  const exampleQuantum =
+    "Quantum computing is a rapidly-emerging technology that harnesses the laws of quantum mechanics to perform calculations more efficiently than classical computers. It relies on quantum bits (qubits) that can exist in a superposition of states, enabling parallel computations. Quantum computers have the potential to solve certain problems exponentially faster than classical computers, such as factoring large numbers, simulating quantum systems, and optimizing complex systems. However, building a practical, large-scale quantum computer remains a significant challenge due to the fragility of qubits and the need for error correction. Potential applications of quantum computing include cryptography, drug discovery, financial modeling, and artificial intelligence.";
+
+  const exampleMacroeconomics =
+    "Macroeconomics is the study of the behavior and decision-making of an entire economy as a whole. It focuses on economy-wide phenomena, such as inflation, unemployment, economic growth, and the effects of government policies on the overall economy. Key macroeconomic concepts include gross domestic product (GDP), inflation rates, interest rates, and aggregate demand and supply. Macroeconomists analyze factors that influence economic growth, employment levels, price stability, and international trade. They also develop models and theories to explain economic fluctuations and propose policies to achieve economic goals, such as full employment, stable prices, and sustainable growth.";
+
+  const exampleGenetics =
+    "Genetics is the study of genes, heredity, and the variation of inherited traits in living organisms. It involves the study of DNA (deoxyribonucleic acid), the molecule that carries genetic information, and the mechanisms by which genes are transmitted from one generation to the next. Genetics encompasses topics such as gene structure, gene expression, genetic variation, gene mapping, genetic engineering, and the inheritance patterns of traits. It plays a crucial role in understanding genetic disorders, evolutionary processes, and the development of organisms. Genetics also has applications in fields like medicine, agriculture, and biotechnology, where it is used for disease diagnosis, crop improvement, and the production of pharmaceuticals and other products.";
+
+  const exampleRiemannHypothesis =
+    "The Riemann Hypothesis is a famous unsolved problem in pure mathematics that has implications for numerous fields, including number theory, cryptography, and quantum physics. It was proposed by the German mathematician Bernhard Riemann in 1859 and concerns the distribution of prime numbers among the integers. Specifically, the hypothesis states that the non-trivial zeros of the Riemann zeta function all lie on the critical line with real part 1/2. Despite its simple formulation, the Riemann Hypothesis has remained one of the most important open questions in mathematics for over 150 years, with numerous mathematicians attempting to prove or disprove it. If proven, it would have significant implications for our understanding of the distribution of prime numbers and could lead to advancements in various areas of mathematics and related fields.";
+
   return (
     <div className="container mx-auto py-8">
       <div className="max-w-2xl mx-auto">
@@ -123,18 +135,48 @@ export default function Home() {
             onClick={() => setIsDialogOpen(true)}
             disabled={isDialogOpen}
           >
-            {isDialogOpen ? "Paste Content" : "Edit Content"}
+            {editedContent === "" ? "Paste Content" : "Edit Content"}
           </Button>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="max-w-md mx-auto p-6">
             <div className="flex flex-col gap-4">
               <Textarea
-                placeholder="Paste your content here..."
+                placeholder="Paste your content here or select an example..."
                 value={isDialogOpen ? text : editedContent}
                 onChange={(e) => setText(e.target.value)}
                 className="resize-none h-48"
               />
+              <div className="flex flex-wrap justify-center space-x-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setText(exampleQuantum)}
+                  className="mb-2"
+                >
+                  Quantum Computing
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setText(exampleMacroeconomics)}
+                  className="mb-2"
+                >
+                  Macroeconomics
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setText(exampleGenetics)}
+                  className="mb-2"
+                >
+                  Genetics
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setText(exampleRiemannHypothesis)}
+                  className="mb-2"
+                >
+                  Riemann Hypothesis
+                </Button>
+              </div>
               <Button onClick={generateQuestions} disabled={loading}>
                 {loading ? "Generating..." : "Generate Questions"}
               </Button>
