@@ -1,5 +1,3 @@
-// page.tsx
-
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -7,6 +5,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { OpenAI } from "openai";
 import { useState } from "react";
 import { QuestionCardGroup } from "@/components/QuestionCardGroup";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 type QuestionAnswer = {
   question: string;
@@ -23,6 +36,8 @@ export default function Home() {
   const [questions, setQuestions] = useState<QuestionAnswer[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editedContent, setEditedContent] = useState("");
 
   const generateQuestions = async () => {
     setLoading(true);
@@ -43,14 +58,13 @@ export default function Home() {
             content: text,
           },
         ],
-        temperature: 1,
-        max_tokens: 256,
+        temperature: 0.5,
+        max_tokens: 500,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0,
       });
 
-      console.log("response", response);
       const generatedText = response.choices[0].message.content?.trim() ?? "";
       let questionAnswers = generatedText.split("???").map((qa) => {
         const [question, answer] = qa.split("###");
@@ -60,6 +74,8 @@ export default function Home() {
 
       questionAnswers = questionAnswers.filter((qa) => qa !== null);
       setQuestions(questionAnswers as QuestionAnswer[]);
+      setEditedContent(text);
+      setIsDialogOpen(false);
     } catch (error) {
       console.error("Error generating questions:", error);
       setError(
@@ -70,43 +86,83 @@ export default function Home() {
     setLoading(false);
   };
 
+  type StepCardProps = {
+    step: string;
+    description: string;
+  };
+  const StepCard = ({ step, description }: StepCardProps) => (
+    <div className="bg-white p-4 rounded-md shadow-md">
+      <h3 className="text-lg font-semibold mb-2">{step}</h3>
+      <p className="text-gray-600">{description}</p>
+    </div>
+  );
+
   return (
     <div className="container mx-auto py-8">
-      {/* Center the content vertically with padding */}
       <div className="max-w-2xl mx-auto">
-        {/* Limit the width and center horizontally */}
         <h1 className="text-4xl font-bold mb-8 text-center text-slate-800">
-          {/* Increase the font size, add bold weight, and center the heading */}
           Memoization
         </h1>
-        <div className="mb-8">
-          <Textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Copy and paste something you want to memorize"
-            className="w-full rounded-lg border-slate-300 focus:ring-blue-500"
+        <div className="flex space-x-4 mb-8">
+          <StepCard
+            step="1. Paste Content"
+            description="Paste your content to get started."
           />
-          {/* Add rounded corners and a focus ring */}
+          <StepCard
+            step="2. Review Questions"
+            description="Review the generated questions."
+          />
+          <StepCard
+            step="3. Read Summary"
+            description="Read the summary of your content."
+          />
         </div>
-        <div className="flex justify-center mb-8">
-          {/* Center the button horizontally */}
+        <div className="text-center mb-8">
           <Button
-            onClick={generateQuestions}
-            disabled={loading}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg"
+            variant="outline"
+            onClick={() => setIsDialogOpen(true)}
+            disabled={isDialogOpen}
           >
-            {/* Add background color, hover effect, text color, and rounded corners */}
-            {loading ? "Generating..." : "Generate Questions"}
+            {isDialogOpen ? "Paste Content" : "Edit Content"}
           </Button>
         </div>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <div className="flex flex-col gap-4">
+              <Textarea
+                placeholder="Paste your content here..."
+                value={isDialogOpen ? text : editedContent}
+                onChange={(e) => setText(e.target.value)}
+                className="resize-none h-48"
+              />
+              <Button onClick={generateQuestions} disabled={loading}>
+                {loading ? "Generating..." : "Generate Questions"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
         {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
-        {/* Center the error message */}
         {loading ? (
           <p className="text-center">Generating questions...</p>
         ) : (
-          questions.length > 0 && <QuestionCardGroup questions={questions} />
+          questions.length > 0 && (
+            <div className="flex flex-col items-center">
+              <QuestionCardGroup questions={questions} />
+
+              <div className="mt-4">
+                <h3 className="text-xl font-bold mb-2">Summary</h3>
+                <Accordion type="single" collapsible>
+                  {questions.map((qa, index) => (
+                    <AccordionItem key={index} value={`item-${index}`}>
+                      <AccordionTrigger>{qa.question}</AccordionTrigger>
+                      <AccordionContent>{qa.answer}</AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
+            </div>
+          )
         )}
-        {/* Center the loading message */}
       </div>
     </div>
   );
